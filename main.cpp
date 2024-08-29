@@ -14,16 +14,24 @@ void resize_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
-void inputHandler(GLFWwindow* window){
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
-        glfwSetWindowShouldClose(window, true);
+void input_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+    if(action == GLFW_PRESS){
+        if(key == GLFW_KEY_ESCAPE){
+            glfwSetWindowShouldClose(window, true);
+        }
+        if(key == GLFW_KEY_V){
+            glfwSwapInterval(0);
+        }
     }
+}
+
+void error_callback(int error, const char* description){
+    printf("[GLFW ERROR %d]: %s\n", error, description);
 }
 
 int main(int argc, char const *argv[])
 {
     glfwInit();
-    
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -37,7 +45,11 @@ int main(int argc, char const *argv[])
     }
     
     glfwMakeContextCurrent(window);
+
     glfwSetFramebufferSizeCallback(window, resize_callback);
+    glfwSetKeyCallback(window, input_callback);
+    glfwSetErrorCallback(error_callback);
+
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
         std::cout << "Failed to initialise GLAD!" << std::endl;
@@ -46,8 +58,6 @@ int main(int argc, char const *argv[])
     }
 
     while(!glfwWindowShouldClose(window)){
-        inputHandler(window);
-
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
