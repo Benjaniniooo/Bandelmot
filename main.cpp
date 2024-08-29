@@ -39,13 +39,17 @@ void resize_callback(GLFWwindow* window, int width, int height){
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
-void input_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+void input_callback(GLFWwindow* window, int key, int scancode, int action, int mode){
     if(action == GLFW_PRESS){
         if(key == GLFW_KEY_ESCAPE){
             glfwSetWindowShouldClose(window, true);
         }
         if(key == GLFW_KEY_V){
-            glfwSwapInterval(0);
+            if(mode == GLFW_MOD_SHIFT){
+                glfwSwapInterval(0);
+            }else{
+                glfwSwapInterval(1);
+            }
         }
     }
 }

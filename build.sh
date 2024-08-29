@@ -52,8 +52,9 @@ clear
 
 printf "${BM}${FY} Compiling from source ${TC}${NL}${NL}"
 
-g++ -std=c++2b -Wall -O4 -lGL -lglfw \
--I ./include/ src/glad.c main.cpp \
+g++ -std=c++2b -Wall -O4 \
+main.cpp src/glad.c -I ./include/ \
+-lGL -lglfw \
 -o main.out
 
 if [ $? -eq 0 ]; then
