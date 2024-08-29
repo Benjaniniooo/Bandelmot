@@ -5,16 +5,19 @@
 
 #include <iostream>
 
-int window_width = 800;
-int window_height = 600;
+int windowWidth = 800;
+int windowHeight = 600;
 
 GLFWwindow* window;
 
-void framebufferSizeCallback(GLFWwindow* _window, const int _width, const int _height){
-    window_width = _width;
-    window_height = _height;
+float lastTime = 0.f;
+int framecounter = 0;
 
-    glViewport(0, 0, window_width, window_height);
+void framebufferSizeCallback(GLFWwindow* _window, const int _width, const int _height){
+    windowWidth = _width;
+    windowHeight = _height;
+
+    glViewport(0, 0, windowWidth, windowHeight);
 }
 
 void keyCallback(GLFWwindow* window, const int _key, const int _scancode, const int _action, const int _mode){
@@ -27,7 +30,7 @@ void errorCallback(const int _error, const char* _desc){
     std::cout << "[GLFW ERROR]: " << _error << " " << _desc << std::endl;
 }
 
-bool initialiseGLFW(){
+bool initGLFW(){
     if(!glfwInit()){
         std::cout << "[GLFW ERROR (S)]: glfwInit() failed!" << std::endl; 
 
@@ -38,7 +41,7 @@ bool initialiseGLFW(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(window_width, window_height, "Bandelmot", nullptr, nullptr);
+    window = glfwCreateWindow(windowWidth, windowHeight, "Bandelmot", nullptr, nullptr);
     if(window == nullptr){
         std::cout << "[GLFW ERROR (S)]: glfwCreateWindow() failed!" << std::endl;
 
@@ -70,8 +73,25 @@ void shutdownGLFW(){
     glfwTerminate();
 }
 
-void loopGLFW(){
+void printFPS(){
+    if(framecounter < 100){
+        framecounter++;
+    }else{
+        framecounter = 0;
+
+        std::cout << "FPS: " << 100.f / (glfwGetTime() - lastTime) << std::endl;
+        lastTime = glfwGetTime();
+    }
+}
+
+using renderCallbackTypedef = void (*)(void);
+
+void loopGLFW(renderCallbackTypedef renderCallback){
     while(!glfwWindowShouldClose(window)){
+        renderCallback();
+
+        printFPS();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

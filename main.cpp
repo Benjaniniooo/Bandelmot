@@ -1,17 +1,20 @@
 #include "glfw.cpp"
+#include "opengl.cpp"
 
 #include <iostream>
 
 int main(int argc, char const *argv[])
 {
-    if(!initialiseGLFW()){
+    if(!initGLFW()){
         return -1;
     }
 
     if(!loadGLAD())
         return -1;
 
-    glfwLoop();
+    initOpenGL();
+
+    loopGLFW(&renderOpenGL);
 
     shutdownGLFW();
 
