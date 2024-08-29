@@ -69,6 +69,13 @@ void initOpenGL(){
         std::cout << "[OPENGL ERROR]: Linking of shader program failed!: " << info << std::endl;
     }
 
+    glValidateProgram(shaderProgram);
+    glGetProgramiv(shaderProgram, GL_VALIDATE_STATUS, &success);
+    if(!success){
+        glGetProgramInfoLog(shaderProgram, 512, nullptr, info);
+        std::cout << "[OPENGL ERROR]: Validation of shader program failed!: " << info << std::endl;
+    }
+
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
