@@ -6,6 +6,9 @@
 unsigned int WINDOW_WIDTH = 800;
 unsigned int WINDOW_HEIGHT = 600;
 
+float lastTime = 0.f;
+unsigned int framecounter = 0;
+
 void resize_callback(GLFWwindow* window, int width, int height)
 {
     WINDOW_WIDTH = width;
@@ -58,6 +61,15 @@ int main(int argc, char const *argv[])
     }
 
     while(!glfwWindowShouldClose(window)){
+        if(framecounter < 100){
+            framecounter++;
+        }else{
+            framecounter = 0;
+            
+            std::cout << "FPS: " << 100.f / (glfwGetTime() - lastTime) << std::endl;
+            lastTime = glfwGetTime();
+        }
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
