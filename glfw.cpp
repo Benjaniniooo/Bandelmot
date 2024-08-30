@@ -56,6 +56,8 @@ bool initGLFW(){
     glfwSetKeyCallback(window, keyCallback);
     glfwSetErrorCallback(errorCallback);
 
+    //glfwSwapInterval(0);
+
     return true;
 }
 

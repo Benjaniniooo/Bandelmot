@@ -22,19 +22,17 @@ const char* vertexShaderProg = R"(
 #version 460 core
 layout (location = 0) in vec3 pos;
 
-out vec4 vertexColor;
+out vec2 positionVertex;
 
 void main(){
     gl_Position = vec4(pos, 1.0);
-    vertexColor = vec4(pos, 1.0);
+    positionVertex = pos.xy;
 }
 )";
 
 const char* fragmentShaderProg = R"(
 #version 460 core
-in vec4 vertexColor;
-
-uniform float scale;
+in vec2 positionVertex;
 
 out vec4 color;
 
@@ -43,12 +41,27 @@ float map(float value, float min1, float max1, float min2, float max2) {
 }
 
 void main(){
-    color = vec4(
-    map(vertexColor.x, -1.0f, 1.0f, 0.0f, scale),
-    map(vertexColor.y, -1.0f, 1.0f, 0.0f, scale),
-    map(vertexColor.z, -1.0f, 1.0f, 0.0f, scale),
-    1.0f
-    );
+    vec2 c = vec2(
+        map(positionVertex.x, -1.0, 1.0, -2.0, 2.0),
+        map(positionVertex.y, -1.0, 1.0, -2.0, 2.0)
+        );
+
+    vec2 z = vec2(0.0, 0.0);
+
+    uint iterationMax = 100;
+
+    uint iteration = 0;
+
+    while(length(z) <= 8 && iteration < iterationMax){
+        z = vec2(z.x * z.x - z.y * z.y, 2 * z.x * z.y);
+        z = z + c;
+
+        iteration = iteration + 1;
+    }
+
+    float grad = map(iteration, 0, iterationMax, 0.0, 1.0);
+
+    color = vec4(grad, grad, grad, 1.0);
 }
 )";
 
@@ -125,8 +138,6 @@ void initOpenGL(){
 
 void renderOpenGL(){
     glClear(GL_COLOR_BUFFER_BIT);
-
-    glUniform1f(glGetUniformLocation(shaderProgram, "scale"), std::sin(glfwGetTime()) / 2.0f + 0.5f);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
