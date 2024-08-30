@@ -1,8 +1,10 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <cmath>
 
 GLfloat vertices[] = {
     -1.0f, -1.0f, 0.0f, // bottom left
@@ -32,6 +34,8 @@ const char* fragmentShaderProg = R"(
 #version 460 core
 in vec4 vertexColor;
 
+uniform float scale;
+
 out vec4 color;
 
 float map(float value, float min1, float max1, float min2, float max2) {
@@ -40,9 +44,9 @@ float map(float value, float min1, float max1, float min2, float max2) {
 
 void main(){
     color = vec4(
-    map(vertexColor.x, -1.0f, 1.0f, 0.0f, 1.0f),
-    map(vertexColor.y, -1.0f, 1.0f, 0.0f, 1.0f),
-    map(vertexColor.z, -1.0f, 1.0f, 0.0f, 1.0f),
+    map(vertexColor.x, -1.0f, 1.0f, 0.0f, scale),
+    map(vertexColor.y, -1.0f, 1.0f, 0.0f, scale),
+    map(vertexColor.z, -1.0f, 1.0f, 0.0f, scale),
     1.0f
     );
 }
@@ -121,6 +125,8 @@ void initOpenGL(){
 
 void renderOpenGL(){
     glClear(GL_COLOR_BUFFER_BIT);
+
+    glUniform1f(glGetUniformLocation(shaderProgram, "scale"), std::sin(glfwGetTime()) / 2.0f + 0.5f);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
