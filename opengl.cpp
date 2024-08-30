@@ -20,17 +20,31 @@ const char* vertexShaderProg = R"(
 #version 460 core
 layout (location = 0) in vec3 pos;
 
+out vec4 vertexColor;
+
 void main(){
     gl_Position = vec4(pos, 1.0);
+    vertexColor = vec4(pos, 1.0);
 }
 )";
 
 const char* fragmentShaderProg = R"(
 #version 460 core
+in vec4 vertexColor;
+
 out vec4 color;
 
+float map(float value, float min1, float max1, float min2, float max2) {
+  return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+
 void main(){
-    color = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+    color = vec4(
+    map(vertexColor.x, -1.0f, 1.0f, 0.0f, 1.0f),
+    map(vertexColor.y, -1.0f, 1.0f, 0.0f, 1.0f),
+    map(vertexColor.z, -1.0f, 1.0f, 0.0f, 1.0f),
+    1.0f
+    );
 }
 )";
 
