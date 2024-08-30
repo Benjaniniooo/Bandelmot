@@ -74,12 +74,12 @@ void shutdownGLFW(){
 }
 
 void printFPS(){
-    if(framecounter < 100){
+    if(framecounter < 256){
         framecounter++;
     }else{
         framecounter = 0;
 
-        std::cout << "FPS: " << 100.f / (glfwGetTime() - lastTime) << std::endl;
+        std::cout << "FPS: " << 256.f / (glfwGetTime() - lastTime) << std::endl;
         lastTime = glfwGetTime();
     }
 }
