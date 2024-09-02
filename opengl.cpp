@@ -42,13 +42,13 @@ float map(float value, float min1, float max1, float min2, float max2) {
 
 void main(){
     vec2 c = vec2(
-        map(positionVertex.x, -1.0, 1.0, -2.0, 2.0),
+        map(positionVertex.x, -1.0, 1.0, -2.0, 1.0),
         map(positionVertex.y, -1.0, 1.0, -2.0, 2.0)
         );
 
     vec2 z = vec2(0.0, 0.0);
 
-    uint iterationMax = 100;
+    uint iterationMax = 500;
 
     uint iteration = 0;
 
@@ -61,7 +61,7 @@ void main(){
 
     float grad = map(iteration, 0, iterationMax, 0.0, 1.0);
 
-    color = vec4(grad, grad, grad, 1.0);
+    color = vec4(grad, 0.0, 0.0, 1.0);
 }
 )";
 
