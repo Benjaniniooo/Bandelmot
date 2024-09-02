@@ -52,8 +52,8 @@ clear
 
 printf "${BM}${FY} Compiling from source ${TC}${NL}${NL}"
 
-g++ -std=c++2b -Wall -O4 \
-main.cpp src/glad.c -I ./include/ \
+g++ -std=c++2b -Wall \
+main.cpp src/glad/*.c src/ImGui/*.cpp -I ./include/ \
 -lGL -lglfw \
 -o main.out
 
