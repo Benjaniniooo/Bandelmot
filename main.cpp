@@ -7,6 +7,10 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+#include "shader.hpp"
+
+////////////////
+
 GLFWwindow* window;
 
 int windowWidth = 800,
@@ -14,6 +18,16 @@ int windowWidth = 800,
 
 float lastTime = 0.f;
 int framecounter = 0;
+
+////////////////
+
+GLuint VAO, VBO, EBO;
+GLuint vertexShader, fragmentShader, shaderProgram;
+
+GLint success;
+char info[512];
+
+////////////////
 
 void errorCallback(const int errorCode, const char* errorDescription){
     std::cout << "[GLFW ERROR]: " << errorCode << " " << errorDescription << std::endl;
@@ -33,6 +47,8 @@ void keyCallback(GLFWwindow* pWindow, const int pKey, const int pScanCode, const
         }
     }
 }
+
+////////////////
 
 int main(int argc, char const *argv[])
 {
@@ -66,6 +82,74 @@ int main(int argc, char const *argv[])
 
     ////////////////
 
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderProg, nullptr);
+    glCompileShader(vertexShader);
+
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if(!success){
+        glGetShaderInfoLog(vertexShader, 512, nullptr, info);
+        std::cout << "[OPENGL ERROR S]: glCompileShader(vertexShader) failed!: " << std::endl;
+        std::cout << info << std::endl;
+        return -1;
+    }
+
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderProg, nullptr);
+    glCompileShader(fragmentShader);
+
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if(!success){
+        glGetShaderInfoLog(vertexShader, 512, nullptr, info);
+        std::cout << "[OPENGL ERROR S]: glCompileShader(fragmentShader) failed!:" << std::endl;
+        std::cout << info << std::endl;
+        return -1;
+    }
+
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+
+    glLinkProgram(shaderProgram);
+
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if(!success){
+        glGetProgramInfoLog(shaderProgram, 512, nullptr, info);
+        std::cout << "[OPENGL ERROR S]: glLinkProgram(shaderProgram) failed!:" << std::endl;
+        std::cout << info << std::endl;
+        return -1;
+    }
+
+    glValidateProgram(shaderProgram);
+
+    glGetProgramiv(shaderProgram, GL_VALIDATE_STATUS, &success);
+    if(!success){
+        glGetProgramInfoLog(shaderProgram, 512, nullptr, info);
+        std::cout << "[OPENGL ERROR S]: glValidateProgram(shaderProgram) failed!:" << std::endl;
+        std::cout << info << std::endl;
+        return -1;
+    }
+
+    glUseProgram(shaderProgram);
+
+    //--------------
+
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*) 0);
+    glEnableVertexAttribArray(0);
+
+    ////////////////
+
     ImGui::CreateContext();
 
     if(!ImGui_ImplGlfw_InitForOpenGL(window, true)){
@@ -89,13 +173,21 @@ int main(int argc, char const *argv[])
             lastTime = glfwGetTime();
         }
 
+        ////////////////
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
         ImGui::ShowDemoWindow();
 
+        ////////////////
+
         glClear(GL_COLOR_BUFFER_BIT);
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        ////////////////
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
